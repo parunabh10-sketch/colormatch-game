@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ColorMatch - Multiplayer Card Game</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%23667eea'/><stop offset='1' stop-color='%23764ba2'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><text x='50' y='50' font-size='60' fill='white' text-anchor='middle' dominant-baseline='central'>🎴</text></svg>">
+    
     <style>
         * {
             margin: 0;
@@ -21,6 +25,38 @@
             overflow: hidden;
         }
 
+        /* Home Button at Top Left */
+        .home-button-top {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .home-button-top:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .home-icon {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        /* Home Screen */
         .home-screen {
             text-align: center;
             padding: 40px;
@@ -93,6 +129,7 @@
             background: linear-gradient(135deg, #ff6b6b, #ee5a24);
         }
 
+        /* Online Lobby */
         .lobby-screen {
             display: none;
             text-align: center;
@@ -173,12 +210,14 @@
             50% { opacity: 0.5; }
         }
 
+        /* Game Container */
         .game-container {
             display: none;
             width: 100%;
             max-width: 1200px;
             height: 100vh;
             padding: 20px;
+            padding-top: 80px; /* Space for home button */
             position: relative;
         }
 
@@ -227,14 +266,17 @@
             min-height: 150px;
         }
 
+        /* Updated Middle Area with Better Separation */
         .middle-area {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 50px;
+            gap: 100px; /* Increased gap for better separation */
             height: 200px;
+            position: relative;
         }
 
+        /* Card Styles */
         .card {
             width: 80px;
             height: 120px;
@@ -312,8 +354,28 @@
             transform: scale(0.8);
         }
 
-        .deck-pile, .discard-pile {
+        /* Updated Deck Pile - Clickable */
+        .deck-pile {
             position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .deck-pile:hover {
+            transform: scale(1.05);
+        }
+
+        .deck-pile.clickable {
+            animation: deckGlow 2s ease infinite;
+        }
+
+        @keyframes deckGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+            }
+            50% { 
+                filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+            }
         }
 
         .deck-pile .card {
@@ -325,6 +387,38 @@
         .deck-pile .card:nth-child(2) { top: 2px; left: 2px; }
         .deck-pile .card:nth-child(3) { top: 4px; left: 4px; }
 
+        /* Draw Card Indicator */
+        .draw-indicator {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .deck-pile.can-draw .draw-indicator {
+            opacity: 1;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Discard Pile */
+        .discard-pile {
+            position: relative;
+        }
+
         .discard-pile .card {
             position: absolute;
             top: 0;
@@ -332,10 +426,21 @@
             cursor: default;
         }
 
+        /* Used Cards Pile - New Style */
+        .used-cards-indicator {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
         .special-symbol {
             font-size: 36px;
         }
 
+        /* Color Selector */
         .color-selector {
             position: fixed;
             top: 50%;
@@ -381,6 +486,7 @@
         .color-option.green { background: #6ab04c; }
         .color-option.yellow { background: #f9ca24; }
 
+        /* Game Message */
         .game-message {
             position: fixed;
             top: 50%;
@@ -406,37 +512,7 @@
             100% { transform: translate(-50%, -50%) scale(1); }
         }
 
-        .action-buttons {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        button:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-
-        button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
-
+        /* Connection Status */
         .connection-status {
             position: fixed;
             top: 20px;
@@ -459,19 +535,49 @@
             display: block;
         }
 
+        /* Deck Cards Count */
+        .deck-count {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
         @media (max-width: 768px) {
             .card {
                 width: 60px;
                 height: 90px;
                 font-size: 18px;
             }
+            
             h1, .game-title {
                 font-size: 2em;
+            }
+            
+            .middle-area {
+                gap: 50px;
+            }
+            
+            .game-container {
+                padding-top: 70px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Home Button (Top Left) - Always Visible in Game -->
+    <div class="home-button-top" id="homeButtonTop" style="display: none;" onclick="backToHome()">
+        <svg class="home-icon" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </div>
+
     <!-- Home Screen -->
     <div id="homeScreen" class="home-screen active">
         <div class="logo">🎴</div>
@@ -492,7 +598,7 @@
     <!-- Online Lobby Screen -->
     <div id="lobbyScreen" class="lobby-screen">
         <h2 style="color: white; margin-bottom: 20px;">Online Multiplayer</h2>
-
+        
         <div id="nameEntry">
             <input type="text" id="playerNameInput" class="player-name-input" placeholder="Enter your name" maxlength="20">
             <button class="menu-button" onclick="submitName()" style="margin-top: 10px;">
@@ -514,21 +620,21 @@
         <div id="roomInfo" style="display: none;">
             <h3 style="color: white; font-size: 1.5em;">Room Code:</h3>
             <div id="roomCode" class="room-code">XXXXX</div>
-
+            
             <div class="players-list">
                 <h4 style="font-size: 1.3em;">Players in Room:</h4>
                 <div id="playersList"></div>
             </div>
-
+            
             <div id="waitingMsg" class="waiting-message">⏳ Waiting for another player...</div>
-
+            
             <div id="hostControls" style="display: none; margin-top: 20px;">
                 <p style="color: #4CAF50; margin-bottom: 10px; font-size: 1.2em;">✅ Both players ready!</p>
                 <button class="menu-button" onclick="startOnlineGame()" style="background: linear-gradient(135deg, #4CAF50, #45a049); font-size: 1.5em; padding: 15px 40px;">
                     🎮 START GAME
                 </button>
             </div>
-
+            
             <div id="guestWaiting" style="display: none; margin-top: 20px;">
                 <p style="color: #4CAF50; font-size: 1.2em;">✅ Ready! Waiting for host to start...</p>
             </div>
@@ -556,13 +662,19 @@
             </div>
 
             <div class="middle-area">
-                <div class="deck-pile" id="deck">
+                <!-- Clickable Deck Pile -->
+                <div class="deck-pile" id="deckPile" onclick="drawCardFromDeck()">
+                    <div class="draw-indicator">Click to Draw</div>
                     <div class="card card-back"></div>
                     <div class="card card-back"></div>
                     <div class="card card-back"></div>
+                    <div class="deck-count" id="deckCount">52</div>
                 </div>
 
-                <div class="discard-pile" id="discard"></div>
+                <!-- Discard Pile -->
+                <div class="discard-pile" id="discard">
+                    <div class="used-cards-indicator" id="usedCardsCount"></div>
+                </div>
             </div>
 
             <div class="player-area">
@@ -570,11 +682,7 @@
             </div>
         </div>
 
-        <div class="action-buttons">
-            <button id="homeBtn" onclick="backToHome()">Home</button>
-            <button id="drawCard" onclick="drawCardAction()">Draw Card</button>
-        </div>
-
+        <!-- Color Selector Modal -->
         <div id="colorSelector" class="color-selector">
             <h3>Choose a Color</h3>
             <div class="color-options">
@@ -585,15 +693,18 @@
             </div>
         </div>
 
+        <!-- Game Message -->
         <div id="gameMessage" class="game-message"></div>
 
+        <!-- Connection Status -->
         <div id="connectionStatus" class="connection-status">
             <span id="statusText">Connected</span>
         </div>
     </div>
 
+    <!-- Socket.io for online multiplayer -->
     <script src="/socket.io/socket.io.js"></script>
-
+    
     <script>
         // Game modes
         const GameMode = {
@@ -622,6 +733,7 @@
         let hasDrawn = false;
         let skipNext = false;
         let isMyTurn = false;
+        let canDrawCard = false;
 
         // Card properties
         const colors = ['red', 'blue', 'green', 'yellow'];
@@ -632,21 +744,25 @@
 
         // Navigation functions
         function backToHome() {
-            if (socket) {
-                socket.disconnect();
-                socket = null;
+            if (confirm('Are you sure you want to leave the game?')) {
+                if (socket) {
+                    socket.disconnect();
+                    socket = null;
+                }
+                onlineGameActive = false;
+                document.getElementById('homeScreen').classList.add('active');
+                document.getElementById('lobbyScreen').classList.remove('active');
+                document.getElementById('gameContainer').classList.remove('active');
+                document.getElementById('homeButtonTop').style.display = 'none';
+                document.getElementById('connectionStatus').className = 'connection-status';
             }
-            onlineGameActive = false;
-            document.getElementById('homeScreen').classList.add('active');
-            document.getElementById('lobbyScreen').classList.remove('active');
-            document.getElementById('gameContainer').classList.remove('active');
-            document.getElementById('connectionStatus').className = 'connection-status';
         }
 
         function startBotGame() {
             gameMode = GameMode.BOT;
             document.getElementById('homeScreen').classList.remove('active');
             document.getElementById('gameContainer').classList.add('active');
+            document.getElementById('homeButtonTop').style.display = 'block';
             document.getElementById('player1Name').textContent = 'You';
             document.getElementById('player2Name').textContent = 'Bot';
             initGame();
@@ -656,6 +772,7 @@
             gameMode = GameMode.LOCAL;
             document.getElementById('homeScreen').classList.remove('active');
             document.getElementById('gameContainer').classList.add('active');
+            document.getElementById('homeButtonTop').style.display = 'block';
             document.getElementById('player1Name').textContent = 'Player 1';
             document.getElementById('player2Name').textContent = 'Player 2';
             initGame();
@@ -665,12 +782,12 @@
             console.log('Opening online menu...');
             document.getElementById('homeScreen').classList.remove('active');
             document.getElementById('lobbyScreen').classList.add('active');
-
+            
             document.getElementById('nameEntry').style.display = 'block';
             document.getElementById('roomOptions').style.display = 'none';
             document.getElementById('roomInfo').style.display = 'none';
             document.getElementById('playerNameInput').value = '';
-
+            
             setTimeout(() => {
                 document.getElementById('playerNameInput').focus();
             }, 100);
@@ -679,18 +796,18 @@
         function submitName() {
             const nameInput = document.getElementById('playerNameInput');
             const name = nameInput.value.trim();
-
+            
             if (!name) {
                 alert('Please enter your name!');
                 return;
             }
-
+            
             console.log('Name submitted:', name);
             playerName = name;
-
+            
             document.getElementById('nameEntry').style.display = 'none';
             document.getElementById('roomOptions').style.display = 'block';
-
+            
             initializeSocket();
         }
 
@@ -700,9 +817,9 @@
                 console.log('Socket already initialized');
                 return;
             }
-
+            
             console.log('Initializing socket connection...');
-
+            
             try {
                 socket = io({
                     query: { playerName: playerName }
@@ -761,7 +878,7 @@
                 socket.on('error', (error) => {
                     alert(error);
                 });
-
+                
             } catch (error) {
                 console.error('Failed to initialize socket:', error);
                 alert('Failed to connect to server!');
@@ -800,7 +917,7 @@
         function updatePlayersList(players) {
             const listEl = document.getElementById('playersList');
             listEl.innerHTML = '';
-
+            
             players.forEach((player, index) => {
                 const playerEl = document.createElement('div');
                 playerEl.className = 'player-item';
@@ -813,7 +930,7 @@
 
             if (players.length === 2) {
                 document.getElementById('waitingMsg').style.display = 'none';
-
+                
                 if (isHost) {
                     document.getElementById('hostControls').style.display = 'block';
                     document.getElementById('guestWaiting').style.display = 'none';
@@ -833,29 +950,30 @@
                 alert('Error: Cannot start game');
                 return;
             }
-
+            
             console.log('Host starting game for room:', roomCode);
             socket.emit('startGame', roomCode);
         }
 
         function startOnlineGameplay(data) {
             console.log('Starting online gameplay with data:', data);
-
+            
             gameMode = GameMode.ONLINE;
             onlineGameActive = true;
             myPosition = data.myPosition;
-
+            
             document.getElementById('lobbyScreen').classList.remove('active');
             document.getElementById('gameContainer').classList.add('active');
-
+            document.getElementById('homeButtonTop').style.display = 'block';
+            
             document.getElementById('player1Name').textContent = data.player1Name;
             document.getElementById('player2Name').textContent = data.player2Name;
-
+            
             playerHand = data.hand;
             currentColor = data.currentColor;
             currentValue = data.currentValue;
             isMyTurn = data.isMyTurn;
-
+            
             updateOnlineDisplay(data);
             showMessage('Game Started! ' + (isMyTurn ? 'Your turn!' : "Opponent's turn"));
         }
@@ -866,9 +984,9 @@
             currentValue = data.currentValue;
             isMyTurn = data.isMyTurn;
             hasDrawn = data.canEndTurn || false;
-
+            
             updateOnlineDisplay(data);
-
+            
             if (data.lastAction) {
                 showMessage(data.lastAction);
             }
@@ -877,20 +995,20 @@
         function updateOnlineDisplay(data) {
             const playerHandEl = document.getElementById('playerHand');
             const opponentHandEl = document.getElementById('opponentHand');
-
+            
             playerHandEl.innerHTML = '';
             opponentHandEl.innerHTML = '';
-
+            
             playerHand.forEach((card, index) => {
                 const cardEl = createOnlineCardElement(card, false, index);
                 playerHandEl.appendChild(cardEl);
             });
-
+            
             for (let i = 0; i < data.opponentCardCount; i++) {
                 const cardEl = createOnlineCardElement(null, true);
                 opponentHandEl.appendChild(cardEl);
             }
-
+            
             const discardEl = document.getElementById('discard');
             discardEl.innerHTML = '';
             const topCard = data.discardTop;
@@ -900,40 +1018,25 @@
                 cardEl.style.borderWidth = '5px';
             }
             discardEl.appendChild(cardEl);
-
+            
             document.getElementById('player1Count').textContent = 
                 myPosition === 'player1' ? playerHand.length : data.opponentCardCount;
             document.getElementById('player2Count').textContent = 
                 myPosition === 'player2' ? playerHand.length : data.opponentCardCount;
-
+            
             document.getElementById('currentTurn').textContent = isMyTurn ? 'Your Turn' : "Opponent's Turn";
-
-            document.getElementById('drawCard').disabled = !isMyTurn || hasDrawn;
-
-            if (hasDrawn && isMyTurn) {
-                if (!document.getElementById('endTurnBtn')) {
-                    const btn = document.createElement('button');
-                    btn.id = 'endTurnBtn';
-                    btn.textContent = 'End Turn';
-                    btn.onclick = () => {
-                        socket.emit('endTurn', roomCode);
-                        btn.remove();
-                    };
-                    document.querySelector('.action-buttons').appendChild(btn);
-                }
-            } else {
-                const endBtn = document.getElementById('endTurnBtn');
-                if (endBtn) endBtn.remove();
-            }
+            
+            // Update deck visual state for online
+            updateDeckState();
         }
 
         function createOnlineCardElement(card, faceDown = false, index = null) {
             const cardEl = document.createElement('div');
-
+            
             if (!faceDown && card) {
                 const playable = canOnlinePlayCard(card) && isMyTurn;
                 cardEl.className = `card ${card.color} ${playable ? 'playable' : 'not-playable'}`;
-
+                
                 if (card.value === 'skip') {
                     cardEl.innerHTML = '<span class="special-symbol">⊘</span>';
                 } else if (card.value === 'reverse') {
@@ -947,7 +1050,7 @@
                 } else {
                     cardEl.textContent = card.value;
                 }
-
+                
                 if (index !== null && isMyTurn) {
                     cardEl.style.cursor = playable ? 'pointer' : 'not-allowed';
                     cardEl.addEventListener('click', () => {
@@ -959,7 +1062,7 @@
             } else {
                 cardEl.className = 'card card-back';
             }
-
+            
             return cardEl;
         }
 
@@ -973,12 +1076,12 @@
 
         function playOnlineCard(index, card) {
             if (!isMyTurn) return;
-
+            
             if (!canOnlinePlayCard(card)) {
                 showMessage("Can't play that card!");
                 return;
             }
-
+            
             if (card.type === 'wild') {
                 showColorSelector((selectedColor) => {
                     socket.emit('playCard', {
@@ -1005,16 +1108,16 @@
 
         function createDeck() {
             deck = [];
-
+            
             for (let color of colors) {
                 deck.push({ color, value: '0', type: 'number' });
-
+                
                 for (let value of values.slice(1)) {
                     deck.push({ color, value, type: isNaN(value) ? 'action' : 'number' });
                     deck.push({ color, value, type: isNaN(value) ? 'action' : 'number' });
                 }
             }
-
+            
             for (let i = 0; i < 4; i++) {
                 deck.push({ color: 'wild', value: 'wild', type: 'wild' });
                 deck.push({ color: 'wild', value: 'wild+4', type: 'wild' });
@@ -1031,17 +1134,17 @@
         function dealCards() {
             playerHand = [];
             opponentHand = [];
-
+            
             for (let i = 0; i < 7; i++) {
                 playerHand.push(deck.pop());
                 opponentHand.push(deck.pop());
             }
-
+            
             let firstCard;
             do {
                 firstCard = deck.pop();
             } while (firstCard.type === 'wild' || firstCard.type === 'action');
-
+            
             discardPile = [firstCard];
             currentColor = firstCard.color;
             currentValue = firstCard.value;
@@ -1057,11 +1160,11 @@
 
         function createCardElement(card, faceDown = false, index = null) {
             const cardEl = document.createElement('div');
-
+            
             if (!faceDown) {
                 const playable = canPlayCard(card) && isMyTurnLocal();
                 cardEl.className = `card ${card.color} ${playable ? 'playable' : 'not-playable'}`;
-
+                
                 if (card.value === 'skip') {
                     cardEl.innerHTML = '<span class="special-symbol">⊘</span>';
                 } else if (card.value === 'reverse') {
@@ -1075,7 +1178,7 @@
                 } else {
                     cardEl.textContent = card.value;
                 }
-
+                
                 if (index !== null && isMyTurnLocal()) {
                     cardEl.style.cursor = playable ? 'pointer' : 'not-allowed';
                     cardEl.addEventListener('click', () => {
@@ -1087,7 +1190,7 @@
             } else {
                 cardEl.className = 'card card-back';
             }
-
+            
             return cardEl;
         }
 
@@ -1100,21 +1203,22 @@
             return false;
         }
 
+        // Updated updateDisplay function
         function updateDisplay() {
             if (onlineGameActive) return;
-
+            
             const playerHandEl = document.getElementById('playerHand');
             const opponentHandEl = document.getElementById('opponentHand');
-
+            
             playerHandEl.innerHTML = '';
             opponentHandEl.innerHTML = '';
-
+            
             if (gameMode === GameMode.LOCAL && currentPlayer === 'player2') {
                 opponentHand.forEach((card, index) => {
                     const cardEl = createCardElement(card, false, index);
                     playerHandEl.appendChild(cardEl);
                 });
-
+                
                 playerHand.forEach(() => {
                     const cardEl = createCardElement(null, true);
                     opponentHandEl.appendChild(cardEl);
@@ -1124,13 +1228,13 @@
                     const cardEl = createCardElement(card, false, index);
                     playerHandEl.appendChild(cardEl);
                 });
-
+                
                 opponentHand.forEach(() => {
                     const cardEl = createCardElement(null, true);
                     opponentHandEl.appendChild(cardEl);
                 });
             }
-
+            
             const discardEl = document.getElementById('discard');
             discardEl.innerHTML = '';
             if (discardPile.length > 0) {
@@ -1142,12 +1246,12 @@
                 }
                 discardEl.appendChild(cardEl);
             }
-
+            
             document.getElementById('player1Count').textContent = 
                 gameMode === GameMode.LOCAL && currentPlayer === 'player2' ? opponentHand.length : playerHand.length;
             document.getElementById('player2Count').textContent = 
                 gameMode === GameMode.LOCAL && currentPlayer === 'player2' ? playerHand.length : opponentHand.length;
-
+            
             let turnText = '';
             if (gameMode === GameMode.BOT) {
                 turnText = currentPlayer === 'player1' ? 'Your Turn' : "Bot's Turn";
@@ -1155,8 +1259,85 @@
                 turnText = currentPlayer === 'player1' ? "Player 1's Turn" : "Player 2's Turn";
             }
             document.getElementById('currentTurn').textContent = turnText;
+            
+            // Update deck state
+            updateDeckState();
+            
+            // Update deck count
+            document.getElementById('deckCount').textContent = deck.length;
+            
+            // Update used cards count
+            const usedCount = document.getElementById('usedCardsCount');
+            if (discardPile.length > 1) {
+                usedCount.textContent = `${discardPile.length - 1} cards`;
+            } else {
+                usedCount.textContent = '';
+            }
+        }
 
-            document.getElementById('drawCard').disabled = !isMyTurnLocal() || hasDrawn;
+        // New function to update deck visual state
+        function updateDeckState() {
+            const deckEl = document.getElementById('deckPile');
+            
+            if (gameMode === GameMode.ONLINE) {
+                canDrawCard = isMyTurn && !hasDrawn;
+            } else {
+                canDrawCard = isMyTurnLocal() && !hasDrawn;
+            }
+            
+            if (canDrawCard) {
+                deckEl.classList.add('can-draw');
+                deckEl.classList.add('clickable');
+            } else {
+                deckEl.classList.remove('can-draw');
+                deckEl.classList.remove('clickable');
+            }
+        }
+
+        // New function to draw card by clicking deck
+        function drawCardFromDeck() {
+            if (onlineGameActive) {
+                if (!isMyTurn || hasDrawn) {
+                    showMessage("You can't draw right now!");
+                    return;
+                }
+                socket.emit('drawCard', roomCode);
+            } else {
+                if (!isMyTurnLocal() || hasDrawn) {
+                    if (!isMyTurnLocal()) {
+                        showMessage("It's not your turn!");
+                    } else {
+                        showMessage("You already drew a card!");
+                    }
+                    return;
+                }
+                
+                const hand = gameMode === GameMode.LOCAL && currentPlayer === 'player2' ? 
+                    opponentHand : playerHand;
+                
+                if (deck.length === 0) {
+                    reshuffleDeck();
+                }
+                
+                if (deck.length > 0) {
+                    const drawnCard = deck.pop();
+                    hand.push(drawnCard);
+                    hasDrawn = true;
+                    
+                    showMessage("Card drawn!");
+                    
+                    updateDisplay();
+                    
+                    if (canPlayCard(drawnCard)) {
+                        showMessage("You can play the drawn card!");
+                    } else {
+                        setTimeout(() => {
+                            showMessage("No playable card. Turn ending...");
+                            endTurn();
+                        }, 1500);
+                    }
+                }
+            }
         }
 
         function canPlayCard(card) {
@@ -1169,18 +1350,18 @@
 
         function playCard(index) {
             if (!isMyTurnLocal()) return;
-
+            
             let hand = gameMode === GameMode.LOCAL && currentPlayer === 'player2' ? opponentHand : playerHand;
             const card = hand[index];
-
+            
             if (!canPlayCard(card)) {
                 showMessage("Can't play that card!");
                 return;
             }
-
+            
             hand.splice(index, 1);
             discardPile.push(card);
-
+            
             if (card.type === 'wild') {
                 showColorSelector((selectedColor) => {
                     currentColor = selectedColor;
@@ -1191,10 +1372,10 @@
                 });
                 return;
             }
-
+            
             currentColor = card.color;
             currentValue = card.value;
-
+            
             executeCardAction(card);
             checkWin();
             endTurn();
@@ -1238,6 +1419,7 @@
 
         function reshuffleDeck() {
             if (discardPile.length > 1) {
+                showMessage("Reshuffling deck...");
                 const topCard = discardPile.pop();
                 deck = [...discardPile];
                 discardPile = [topCard];
@@ -1250,17 +1432,29 @@
                 opponentHand.length : playerHand.length;
             const player2Cards = gameMode === GameMode.LOCAL && currentPlayer === 'player2' ? 
                 playerHand.length : opponentHand.length;
-
+                
             if (player1Cards === 0) {
                 const winner = gameMode === GameMode.LOCAL ? 'Player 1' : 'You';
                 showMessage(`${winner} Win! 🎉`);
-                setTimeout(() => backToHome(), 3000);
+                setTimeout(() => {
+                    if (confirm('Play again?')) {
+                        initGame();
+                    } else {
+                        backToHome();
+                    }
+                }, 2000);
                 return true;
             }
             if (player2Cards === 0) {
                 const winner = gameMode === GameMode.LOCAL ? 'Player 2' : 'Bot';
                 showMessage(`${winner} Wins!`);
-                setTimeout(() => backToHome(), 3000);
+                setTimeout(() => {
+                    if (confirm('Play again?')) {
+                        initGame();
+                    } else {
+                        backToHome();
+                    }
+                }, 2000);
                 return true;
             }
             return false;
@@ -1268,18 +1462,18 @@
 
         function endTurn() {
             hasDrawn = false;
-
+            
             if (skipNext) {
                 skipNext = false;
                 updateDisplay();
-
+                
                 if (gameMode === GameMode.BOT && currentPlayer === 'player2') {
                     setTimeout(() => botPlay(), 1500);
                 }
             } else {
                 currentPlayer = currentPlayer === 'player1' ? 'player2' : 'player1';
                 updateDisplay();
-
+                
                 if (gameMode === GameMode.BOT && currentPlayer === 'player2') {
                     setTimeout(() => botPlay(), 1500);
                 }
@@ -1288,38 +1482,47 @@
 
         function botPlay() {
             if (currentPlayer !== 'player2' || gameMode !== GameMode.BOT) return;
-
-            const playableCards = opponentHand.map((card, index) => ({card, index}))
-                .filter(item => canPlayCard(item.card));
-
-            if (playableCards.length > 0) {
-                const chosen = playableCards[Math.floor(Math.random() * playableCards.length)];
-                const card = opponentHand.splice(chosen.index, 1)[0];
-                discardPile.push(card);
-
-                if (card.type === 'wild') {
-                    currentColor = colors[Math.floor(Math.random() * colors.length)];
-                    showMessage(`Bot played ${card.value} - Color: ${currentColor}`);
+            
+            showMessage("Bot is thinking...");
+            
+            setTimeout(() => {
+                const playableCards = opponentHand.map((card, index) => ({card, index}))
+                    .filter(item => canPlayCard(item.card));
+                
+                if (playableCards.length > 0) {
+                    const chosen = playableCards[Math.floor(Math.random() * playableCards.length)];
+                    const card = opponentHand.splice(chosen.index, 1)[0];
+                    discardPile.push(card);
+                    
+                    if (card.type === 'wild') {
+                        currentColor = colors[Math.floor(Math.random() * colors.length)];
+                        showMessage(`Bot played ${card.value} - Color: ${currentColor}`);
+                    } else {
+                        currentColor = card.color;
+                        currentValue = card.value;
+                        showMessage(`Bot played ${card.color} ${card.value}`);
+                    }
+                    
+                    executeCardAction(card);
+                    checkWin();
                 } else {
-                    currentColor = card.color;
-                    currentValue = card.value;
-                    showMessage(`Bot played ${card.color} ${card.value}`);
+                    if (deck.length === 0) {
+                        reshuffleDeck();
+                    }
+                    if (deck.length > 0) {
+                        opponentHand.push(deck.pop());
+                        showMessage("Bot drew a card");
+                    }
                 }
-
-                executeCardAction(card);
-                checkWin();
-            } else {
-                drawCards(opponentHand, 1);
-                showMessage("Bot drew a card");
-            }
-
-            endTurn();
+                
+                endTurn();
+            }, 1500);
         }
 
         function showColorSelector(callback) {
             const selector = document.getElementById('colorSelector');
             selector.classList.add('active');
-
+            
             const options = selector.querySelectorAll('.color-option');
             options.forEach(option => {
                 option.onclick = () => {
@@ -1336,29 +1539,6 @@
             setTimeout(() => {
                 messageEl.classList.remove('active');
             }, 2000);
-        }
-
-        function drawCardAction() {
-            if (onlineGameActive) {
-                if (!isMyTurn || hasDrawn) return;
-                socket.emit('drawCard', roomCode);
-            } else {
-                if (!isMyTurnLocal() || hasDrawn) return;
-
-                const hand = gameMode === GameMode.LOCAL && currentPlayer === 'player2' ? 
-                    opponentHand : playerHand;
-
-                drawCards(hand, 1);
-                hasDrawn = true;
-                updateDisplay();
-
-                const drawnCard = hand[hand.length - 1];
-                if (canPlayCard(drawnCard)) {
-                    showMessage("You can play the drawn card!");
-                } else {
-                    setTimeout(() => endTurn(), 1000);
-                }
-            }
         }
     </script>
 </body>
