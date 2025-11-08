@@ -1253,15 +1253,11 @@
                 if (deck.length > 0) {
                     hand.push(deck.pop());
                     hasDrawn = true;
-                    showMessage("Card drawn!");
+                    showMessage("Card drawn! Turn ending...");
                     updateDisplay();
-                    const drawnCard = hand[hand.length - 1];
-                    if (!canPlayCard(drawnCard)) {
-                        setTimeout(() => {
-                            showMessage("No playable card. Turn ending...");
-                            endTurn();
-                        }, 1200);
-                    }
+                    setTimeout(() => {
+                        endTurn();
+                    }, 1200);
                 }
             }
         }
