@@ -278,12 +278,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             padding: 10px;
-            overflow: hidden;
+            overflow: visible;
             background: rgba(0, 0, 0, 0.1);
             margin: 10px;
             border-radius: 20px;
+            gap: 5px;
         }
 
         /* Opponent Area */
@@ -291,8 +292,9 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 80px;
-            padding: 5px;
+            min-height: 60px;
+            padding: 15px 5px 5px 5px;
+            flex-shrink: 0;
         }
 
         /* Middle Area */
@@ -301,11 +303,11 @@
             justify-content: center;
             align-items: center;
             gap: 40px;
-            padding: 20px 10px;
+            padding: 15px 10px;
             flex-shrink: 0;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         /* Player Area */
@@ -313,8 +315,10 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            min-height: 100px;
-            padding: 5px;
+            min-height: 90px;
+            padding: 5px 5px 25px 5px;
+            flex-shrink: 0;
+            margin-bottom: 20px;
         }
 
         /* Card Styles */
@@ -371,7 +375,7 @@
         }
 
         .hand .card {
-            margin: 0 -15px;
+            margin: 0 -8px;
         }
 
         .hand .card:hover,
@@ -639,7 +643,19 @@
             
             .middle-area {
                 gap: 25px;
-                padding: 15px 5px;
+                padding: 10px 5px;
+                margin: 3px 0;
+            }
+            
+            .opponent-area {
+                min-height: 50px;
+                padding: 20px 3px 3px 3px;
+            }
+            
+            .player-area {
+                min-height: 80px;
+                padding: 3px 3px 30px 3px;
+                margin-bottom: 30px;
             }
             
             .hand .card {
@@ -679,6 +695,19 @@
             
             .middle-area {
                 gap: 20px;
+                padding: 8px 5px;
+                margin: 2px 0;
+            }
+            
+            .opponent-area {
+                min-height: 45px;
+                padding: 25px 2px 2px 2px;
+            }
+            
+            .player-area {
+                min-height: 70px;
+                padding: 2px 2px 35px 2px;
+                margin-bottom: 40px;
             }
             
             h1 { font-size: 1.3em; }
@@ -691,6 +720,11 @@
             .deck-pile, .discard-pile {
                 width: 48px;
                 height: 70px;
+            }
+            
+            .game-area {
+                margin: 5px;
+                padding: 5px;
             }
         }
     </style>
