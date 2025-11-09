@@ -368,21 +368,20 @@
 
         .hand {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
             max-width: 100%;
         }
 
         .hand .card {
-            margin: 0 -8px;
+            margin: 0;
         }
 
         .hand .card:hover,
         .hand .card:active {
             transform: translateY(-15px) scale(1.05);
             z-index: 100;
-            margin: 0 2px;
         }
 
         .card.playable {
@@ -658,8 +657,12 @@
                 margin-bottom: 30px;
             }
             
+            .hand {
+                gap: 6px;
+            }
+            
             .hand .card {
-                margin: 0 -18px;
+                margin: 0;
             }
             
             .score-item {
@@ -708,6 +711,14 @@
                 min-height: 70px;
                 padding: 2px 2px 35px 2px;
                 margin-bottom: 40px;
+            }
+            
+            .hand {
+                gap: 4px;
+            }
+            
+            .hand .card {
+                margin: 0;
             }
             
             h1 { font-size: 1.3em; }
